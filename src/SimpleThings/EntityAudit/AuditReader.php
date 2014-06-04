@@ -803,9 +803,17 @@ class AuditReader
         /** @var ClassMetadataInfo|ClassMetadata $metadata */
         $metadata = $this->em->getClassMetadata($className);
         $fields = $metadata->getFieldNames();
-        $fields = array_merge($fields, $metadata->getAssociationNames());
         $return = array();
-        foreach ($fields AS $fieldName) {
+
+        $assocFields = $metadata->getAssociationNames();
+        foreach ($assocFields as $assocField) {
+            $assocMapping = $metadata->getAssociationMapping($assocField);
+            if ($assocMapping['type'] & ClassMetadata::MANY_TO_ONE) {
+                $fields[] = $assocField;
+            }
+        }
+
+        foreach ($fields as $fieldName) {
             $return[$fieldName] = $metadata->getFieldValue($entity, $fieldName);
         }
 
