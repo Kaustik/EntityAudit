@@ -435,7 +435,7 @@ class AuditReader
     {
         $metadata = $this->em->getClassMetadata($className);
         $fields = $metadata->getFieldNames();
-
+        $fields = array_merge($fields, $metadata->getAssociationNames());
         $return = array();
         foreach ($fields AS $fieldName) {
             $return[$fieldName] = $metadata->getFieldValue($entity, $fieldName);
@@ -486,7 +486,7 @@ class AuditReader
         }
 
         foreach ($class->associationMappings AS $assoc) {
-            if ( ($assoc['type'] & ClassMetadata::TO_ONE) == 0 || !$assoc['isOwningSide']) {
+            if (($assoc['type'] & ClassMetadata::TO_ONE) == 0 || !$assoc['isOwningSide']) {
                 continue;
             }
 
